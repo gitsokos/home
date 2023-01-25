@@ -19,8 +19,11 @@ class Set:
     for x in other:						 # Add items in other
       if not x in res:
         res.append(x)
+#    print("Union:(end) res="+str(res))
+    x=Set(res)
+    print(type(x))
     print("Union:(end) res="+str(res))
-    return Set(res)
+    return x # Set(res)
 
   def concat(self, value):					 # value: list, Set...
     print("concat: "+str(value))
@@ -41,4 +44,5 @@ if __name__ == '__main__':					 # from setwrapper import Set
   print("__main__: "+str(x))
   print(x.union(Set([1, 4, 7])))				 # prints Set:[1, 3, 5, 7, 4]
   print("__main__: end")
+  print(type(x))
 #  print(x | Set([1, 4, 6]))					 # prints Set:[1, 3, 5, 7, 4, 6]
