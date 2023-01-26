@@ -41,7 +41,7 @@ class Set:
 if __name__ == '__main__':					 # from setwrapper import Set
   print("__main__: ")
   x = Set([1, 3, 5, 7])
-  print("__main__: "+str(x))
+  print("__main__: x="+str(x)+" type=",type(x))
   print(x.union(Set([1, 4, 7])))				 # prints Set:[1, 3, 5, 7, 4]
   print("__main__: end")
   print(type(x))
