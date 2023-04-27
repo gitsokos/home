@@ -30,12 +30,12 @@ resource "aws_sqs_queue" "example_queue" {
 }
 
 
-resource "aws_sns_topic_subscription" "user_updates_emails" {
-  topic_arn = aws_sns_topic.example_topic.arn
-  protocol  = "email"
-  for_each  = toset(["grtsokos@gmail.com"])
-  endpoint  = each.value
-}
+#resource "aws_sns_topic_subscription" "user_updates_emails" {
+#  topic_arn = aws_sns_topic.example_topic.arn
+#  protocol  = "email"
+#  for_each  = toset(["grtsokos@gmail.com"])
+#  endpoint  = each.value
+#}
 
 resource "aws_sns_topic_subscription" "user_updates_sqs" {
   topic_arn = aws_sns_topic.example_topic.arn
