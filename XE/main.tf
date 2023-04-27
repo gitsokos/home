@@ -84,7 +84,14 @@ resource "aws_sns_topic" "user_updates" {
 EOF
 }
 
-########################################### output ###############################################################################
+resource "aws_sns_topic_subscription" "user_updates_emails" {
+  topic_arn = aws_sns_topic.user_updates.arn
+  protocol  = "email"
+  for_each  = toset(["grtsokos@gmail.com", "dmaleas@gmail.com"])
+  endpoint  = each.value
+}
+
+#################### output #################################################################
 
 output "instance_nodes" {
   value = [aws_instance.node.*.public_dns, aws_instance.node.*.tags.Name]
