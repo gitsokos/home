@@ -27,6 +27,10 @@ provider "aws" {
 
 resource "aws_sqs_queue" "example_queue" {
   name = "example_queue"
+  depends_on = [
+    aws_iam_policy_attachment.example_attachment
+  ]
+    
 }
 
 
@@ -117,4 +121,30 @@ resource "aws_sqs_queue" "example_queue" {
 ###    }
 ###  ]
 ###}
+
+resource "aws_iam_policy" "example_policy" {
+  name        = "sqs-create-policy"
+  description = "Allows users to create SQS resources"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:CreateQueue",
+          "sqs:GetQueueUrl",
+          "sqs:ListQueues"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_policy_attachment" "example_attachment" {
+  name       = "sqs-create-attachment"
+  policy_arn = aws_iam_policy.example_policy.arn
+  users      = ["iam-george"]
+}
 
