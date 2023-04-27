@@ -87,7 +87,7 @@ EOF
 resource "aws_sns_topic_subscription" "user_updates_emails" {
   topic_arn = aws_sns_topic.user_updates.arn
   protocol  = "email"
-  for_each  = toset(["grtsokos@gmail.com", "dmaleas@gmail.com"])
+  for_each  = toset(["grtsokos@gmail.com"])
   endpoint  = each.value
 }
 
