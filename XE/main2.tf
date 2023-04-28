@@ -1,3 +1,33 @@
+variable "instance_name" {
+  type          = string
+  default       = "main_instance"
+}
+
+variable "type" {
+  type          = string
+  default       = "t2.large"
+}
+
+#resource "aws_instance" "node" {
+#  ami           = "ami-0c6ebbd55ab05f070"
+#  instance_type = var.type
+#  tags = {
+#    Name = var.instance_name
+#  }
+#  key_name = "ec2_rsa"
+#  vpc_security_group_ids = [aws_security_group.main.id]
+#}
+
+#resource "aws_key_pair" "deployer" {
+#  key_name   = "ec2_rsa"
+#  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDUYjxF3kIZB7OeYAgRPEYCUvcTwzsEa1BsIk/odnCvphRVdhwEWdtmVuNPe4aoWCFPgQ/UB8AFIfbyunzVon088wdqmPLtA5pKGPC2Gn6kSxq5yK4+jhNVKT+qcHnS6FeTdCGDKZehoeTq6usE9FFI+56nfgvYXBJ2DjWvl7kn/fsbrU5Q30JAbDioDY9QSrPgJxGBJC62MDH3ryckqBDNwsE3O988bA85Zl3oGlYOsMis0JZIxvJJ1OX9+iEtxJjwT2FaWV/B0hl2ZhcBUry25L/nVWiQHWI6NH8o0Fj9qCFOiiTWFrri62J9YrDNS1eSv+kI9Y4X0peDeinuV2zq1Dmdyxwy+dOCHVcj7jEmb+WR1ALgipsHN27PiRMnnBiVcyQtNa/YcNbxgEIz3wYTmYFQI8EF2IjEBb0CmuoB9b5iSB8fv1Z/ebSIGqSh3slKJ5vV1EgU2bUocP3DC6tCYlIBoqolJ9IwgxholwyE+Bv4RMger9R5R6aN9P39hC0= george@experimental"
+
+#}
+
+#output "instance_nodes" {
+#  value = [aws_instance.node.*.public_dns, aws_instance.node.*.tags.Name]
+#}
+
 ////////////////////////////////////////////////
 
 /*
