@@ -1,3 +1,9 @@
+provider "aws" {
+  region = "eu-west-3"
+}
+
+################################	Variables	##############################################
+ 
 variable "instance_name" {
   type          = string
   default       = "main_instance"
@@ -5,27 +11,74 @@ variable "instance_name" {
 
 variable "type" {
   type          = string
-  default       = "t2.large"
+  default       = "t2.micro"
 }
 
-#resource "aws_instance" "node" {
-#  ami           = "ami-0c6ebbd55ab05f070"
-#  instance_type = var.type
-#  tags = {
-#    Name = var.instance_name
-#  }
+variable "ami" {
+  type          = string
+  default       ="ami-0c6ebbd55ab05f070"	#	ami-0b7fd829e7758b06d # Amazon Linux 2 @eu-central-1
+}
+
+variable "key_name" {
+  type		= string
+  default	= "ec2_rca"
+}
+
+variable "pub_key" {
+  type		= string
+  default	= "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDUYjxF3kIZB7OeYAgRPEYCUvcTwzsEa1BsIk/odnCvphRVdhwEWdtmVuNPe4aoWCFPgQ/UB8AFIfbyunzVon088wdqmPLtA5pKGPC2Gn6kSxq5yK4+jhNVKT+qcHnS6FeTdCGDKZehoeTq6usE9FFI+56nfgvYXBJ2DjWvl7kn/fsbrU5Q30JAbDioDY9QSrPgJxGBJC62MDH3ryckqBDNwsE3O988bA85Zl3oGlYOsMis0JZIxvJJ1OX9+iEtxJjwT2FaWV/B0hl2ZhcBUry25L/nVWiQHWI6NH8o0Fj9qCFOiiTWFrri62J9YrDNS1eSv+kI9Y4X0peDeinuV2zq1Dmdyxwy+dOCHVcj7jEmb+WR1ALgipsHN27PiRMnnBiVcyQtNa/YcNbxgEIz3wYTmYFQI8EF2IjEBb0CmuoB9b5iSB8fv1Z/ebSIGqSh3slKJ5vV1EgU2bUocP3DC6tCYlIBoqolJ9IwgxholwyE+Bv4RMger9R5R6aN9P39hC0= george@experimental"
+}
+
+################################	Output		##############################################
+
+output "instance_public_ip" {
+  value = aws_instance.redrive.public_ip
+}
+
+output "instance" {
+  value = aws_instance.redrive.public_dns
+}
+
+################################	Resources	#############################################
+
+/*
+resource "aws_instance" "redrive" {
+  ami           = var.ami  #"ami-0b7fd829e7758b06d" # Amazon Linux 2 AMI
+  instance_type = var.type #"t2.micro"
+
 #  key_name = "ec2_rsa"
-#  vpc_security_group_ids = [aws_security_group.main.id]
-#}
+#  key_name             = "awsredrive"
+  iam_instance_profile = aws_iam_instance_profile.ec2_sqsrole.name
+  vpc_security_group_ids = [aws_security_group.allowssh.id]
+  tags = {
+    Name = "awsredrive"
+  }
+
+  user_data = file("awsredrive.sh")
+
+}
+
+*/
+
+resource "aws_instance" "redrive" {
+  ami                    = var.ami
+  instance_type          = var.type
+
+  key_name               = aws_key_pair.ec2-ssh-pub.key_name
+#  iam_instance_profile   = aws_iam_instance_profile.ec2_sqsrole.name
+  vpc_security_group_ids = [aws_security_group.allowssh.id]
+
+  tags = {
+    Name = var.instance_name
+  }
+
+  user_data = file("awsredrive.sh")
+}
 
 resource "aws_key_pair" "ec2-ssh-pub" {
-  key_name   = "ec2_rsa"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDUYjxF3kIZB7OeYAgRPEYCUvcTwzsEa1BsIk/odnCvphRVdhwEWdtmVuNPe4aoWCFPgQ/UB8AFIfbyunzVon088wdqmPLtA5pKGPC2Gn6kSxq5yK4+jhNVKT+qcHnS6FeTdCGDKZehoeTq6usE9FFI+56nfgvYXBJ2DjWvl7kn/fsbrU5Q30JAbDioDY9QSrPgJxGBJC62MDH3ryckqBDNwsE3O988bA85Zl3oGlYOsMis0JZIxvJJ1OX9+iEtxJjwT2FaWV/B0hl2ZhcBUry25L/nVWiQHWI6NH8o0Fj9qCFOiiTWFrri62J9YrDNS1eSv+kI9Y4X0peDeinuV2zq1Dmdyxwy+dOCHVcj7jEmb+WR1ALgipsHN27PiRMnnBiVcyQtNa/YcNbxgEIz3wYTmYFQI8EF2IjEBb0CmuoB9b5iSB8fv1Z/ebSIGqSh3slKJ5vV1EgU2bUocP3DC6tCYlIBoqolJ9IwgxholwyE+Bv4RMger9R5R6aN9P39hC0= george@experimental"
+  key_name = var.key_name
+  public_key= var.pub_key
 
-}
-
-output "instance_nodes" {
-  value = [aws_instance.redrive.*.public_dns, aws_instance.redrive.*.tags.Name]
 }
 
 ////////////////////////////////////////////////
@@ -37,16 +90,17 @@ locals {
 */
 
 
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
+resource "aws_security_group" "allowssh" {
+  name        = "allowssh"
   description = "Allow SSH inbound traffic"
 
   ingress {
     from_port   = 0 #22
     to_port     = 0 #22
     protocol    = "-1" # "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0",]
   }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -55,8 +109,9 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
-resource "aws_iam_role" "ec2_sqs_role" {
-  name = "ec2-sqs-role"
+/*
+resource "aws_iam_role" "ec2_sqsrole" {
+  name = "ec2-sqsrole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -72,8 +127,8 @@ resource "aws_iam_role" "ec2_sqs_role" {
   })
 }
 
-resource "aws_iam_policy" "sqs_full_access" {
-  name        = "sqs-full-access"
+resource "aws_iam_policy" "sqs_full" {
+  name        = "sqs-full"
   description = "Grant full access to SQS"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -89,20 +144,20 @@ resource "aws_iam_policy" "sqs_full_access" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "sqs_full_access" {
-  policy_arn = aws_iam_policy.sqs_full_access.arn
-  role       = aws_iam_role.ec2_sqs_role.name
+resource "aws_iam_role_policy_attachment" "sqs_full" {
+  policy_arn = aws_iam_policy.sqs_full.arn
+  role       = aws_iam_role.ec2_sqsrole.name
 }
 
 
 resource "aws_instance" "redrive" {
-  ami           = "ami-0b7fd829e7758b06d" # Amazon Linux 2 AMI
-  instance_type = "t2.micro"
+  ami           = var.ami  #"ami-0b7fd829e7758b06d" # Amazon Linux 2 AMI
+  instance_type = var.type #"t2.micro"
 
-  key_name = "ec2_rsa"
+#  key_name = "ec2_rsa"
 #  key_name             = "awsredrive"
-  iam_instance_profile = aws_iam_instance_profile.ec2_sqs_role.name
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+  iam_instance_profile = aws_iam_instance_profile.ec2_sqsrole.name
+  vpc_security_group_ids = [aws_security_group.allowssh.id]
   tags = {
     Name = "awsredrive"
   }
@@ -111,17 +166,14 @@ resource "aws_instance" "redrive" {
 
 }
 
-resource "aws_iam_instance_profile" "ec2_sqs_role" {
-  name = "ec2-sqs-role"
-  role = aws_iam_role.ec2_sqs_role.name
+resource "aws_iam_instance_profile" "ec2_sqsrole" {
+  name = "ec2-sqsrole"
+  role = aws_iam_role.ec2_sqsrole.name
 }
 
-output "instance_public_ip" {
-  value = aws_instance.redrive.public_ip
-}
-
-//------------------------------------------------------------------------------------------
-
+*/
+#------------------------------------------------------------------------------------------
+/*
 resource "aws_sns_topic" "example_topic" {
   name            = "example-topic"
   delivery_policy = <<EOF
@@ -218,3 +270,4 @@ resource "aws_iam_policy_attachment" "example_attachment" {
   users      = ["terraform"]
 
 }
+*/
