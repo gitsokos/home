@@ -92,39 +92,8 @@ resource "aws_iam_policy" "example_policy" {
   })
 }
 
-
-###resource "aws_security_group" "main" {
-###  egress = [
-###    {
-###      cidr_blocks      = ["0.0.0.0/0", ]
-###      description      = ""
-###      from_port        = 0
-###      ipv6_cidr_blocks = []
-###      prefix_list_ids  = []
-###      protocol         = "-1"
-###      security_groups  = []
-###      self             = false
-###      to_port          = 0
-###    }
-###  ]
-###  ingress = [
-###    {
-###      cidr_blocks      = ["0.0.0.0/0", ]
-###      description      = ""
-###      from_port        = 0 # 22
-###      ipv6_cidr_blocks = []
-###      prefix_list_ids  = []
-###      protocol         = "-1" # "tcp"
-###      security_groups  = []
-###      self             = false
-###      to_port          = 0 #22
-###    }
-###  ]
-###}
-
 resource "aws_iam_policy_attachment" "example_attachment" {
   name       = "sqs-create-attachment"
   policy_arn = aws_iam_policy.example_policy.arn
   users      = ["iam-george"]
 }
-
