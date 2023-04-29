@@ -1,12 +1,12 @@
 provider "aws" {
-  region = "eu-west-3"
+  region = "eu-central-1"
 }
 
 ################################	Variables	##############################################
  
 variable "instance_name" {
   type          = string
-  default       = "main_instance"
+  default       = "redrive"
 }
 
 variable "type" {
@@ -16,7 +16,8 @@ variable "type" {
 
 variable "ami" {
   type          = string
-  default       ="ami-0c6ebbd55ab05f070"	#	ami-0b7fd829e7758b06d # Amazon Linux 2 @eu-central-1
+  default       ="ami-0b7fd829e7758b06d"	# Amazon Linux 2 @eu-central-1
+#  default       ="ami-0c6ebbd55ab05f070"	# Ubuntu @eu-west-3
 }
 
 variable "key_name" {
