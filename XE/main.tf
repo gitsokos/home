@@ -118,13 +118,8 @@ resource "aws_sns_topic" "sns-topic1" {
 EOF
 }
 
-
 resource "aws_sqs_queue" "sqs-q1" {
   name = "sqs-q1"
-#  depends_on = [
-#    aws_iam_policy_attachment.example_attachment
-#  ]
-
 }
 
 resource "aws_sns_topic_subscription" "sns-subscr" {
@@ -144,9 +139,9 @@ resource "aws_sqs_queue_policy" "sqs-policy" {
         Principal = "*"
         Action = [
           "sqs:SendMessage",
-#          "sqs:CreateQueue",    #
-#          "sqs:GetQueueUrl",    #
-#          "sqs:ListQueues"      #
+          "sqs:CreateQueue",    #
+          "sqs:GetQueueUrl",    #
+          "sqs:ListQueues"      #
         ]
         Resource = aws_sqs_queue.sqs-q1.arn
         Condition = {
@@ -158,31 +153,3 @@ resource "aws_sqs_queue_policy" "sqs-policy" {
     ]
   })
 }
-
-/*
-resource "aws_iam_policy" "example_policy" {
-  name        = "sqs-create-policy"
-  description = "Allows users to create SQS resources"
-  policy      = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "sqs:CreateQueue",
-          "sqs:GetQueueUrl",
-          "sqs:ListQueues"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "example_attachment" {
-  name       = "sqs-create-attachment"
-  policy_arn = aws_iam_policy.example_policy.arn
-  users      = ["terraform"]
-
-}
-*/
