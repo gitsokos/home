@@ -51,7 +51,7 @@ resource "aws_security_group" "allowssh" {
   }
 }
 
-/*
+/*-----------------------*/
 resource "aws_iam_role" "ec2_sqsrole" {
   name = "ec2-sqsrole"
 
@@ -91,7 +91,7 @@ resource "aws_iam_role_policy_attachment" "sqs_full" {
   role       = aws_iam_role.ec2_sqsrole.name
 }
 
-*/
+/*--------------------------------------*/
 
 #------------------------------------------------------------------------------------------
 
