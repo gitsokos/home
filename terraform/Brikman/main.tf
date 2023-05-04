@@ -2,6 +2,24 @@ provider "aws" {
   region = "eu-west-3"
 }
 
+
+# terraform init -backend-config=backend.hcl (contains bucket = "...", region, dynamodb_table, encrypt)
+
+/*
+terraform {
+  backend "s3" {
+
+    key = "global/s3/terraform.tfstate"
+
+    bucket = "terraform-tutorial-brikman-state"
+    region = "eu-west-3"
+    dynamodb_table = "terraform-tutorial-brikman-locks"
+    encrypt = true
+
+  }
+}
+*/
+
 variable "server_port" {
   description = "The port the server will use for HTTP requests"
   type = number
